@@ -1,8 +1,9 @@
 {
-  "name": "express-auth-mongoose-boilerplate",
+  "name": "pets-api",
   "version": "1.0.0",
-  "description": "Auth boilerplate for mongoose express using token auth",
+  "description": "API with CRUD for pets and their subcdocuments(toys)",
   "main": "server.js",
+  "seed": "node ./app/models/seed.js",
   "scripts": {
     "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
