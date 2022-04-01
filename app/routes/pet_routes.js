@@ -22,12 +22,13 @@ const router = express.Router()
 
 // ROUTES GO HERE
 
-// Index
+// INDEX
 // GET /pets
 router.get('/pets', (req, res, next) => {
     // we will allow access to view all the pets, by skipping 'requireToken'
     // if we wanted to make this a protected resource, we'd just need to add that middleware as the second arg to our get(like we did in create for our post)
     Pet.find()
+        .populate('owner')
         .then(pets => {
             // pets will be an array of mongoose documents
             // so we want to turn them into POJO (plain ol' js objects)
@@ -37,11 +38,12 @@ router.get('/pets', (req, res, next) => {
         .then(pets => res.status(200).json({ pets }))
         .catch(next)
 })
-// Show
+// SHOW
 // GET /pets/624470c12ed7079ead53d4df
 router.get('/pets/:id', (req, res, next) => {
     // we get the id from req.params.id -> :id
     Pet.findById(req.params.id)
+        .populate('owner')
         .then(handle404)
         // if its successful, respond with an object as json
         .then(pet => res.status(200).json({ pet: pet.toObject() }))
@@ -49,19 +51,23 @@ router.get('/pets/:id', (req, res, next) => {
         .catch(next)
 })
 
-// Create
-router.post('/pets', requireToken, (req, res, next)=>{
-    // we brought in required token so we can have  access to req.user
+
+// CREATE
+// POST /pets
+router.post('/pets', requireToken, (req, res, next) => {
+    // we brought in requireToken, so we can have access to req.user
     req.body.pet.owner = req.user.id
 
     Pet.create(req.body.pet)
-        .then(pet =>{
-            // send t a succesful create response like this
-            res.status(201).json({pet: pet.toObject() })
+        .then(pet => {
+            // send a successful response like this
+            res.status(201).json({ pet: pet.toObject() })
         })
+        // if an error occurs, pass it to the error handler
         .catch(next)
 })
-// Update
+
+// UPDATE
 // PATCH /pets/624470c12ed7079ead53d4df
 router.patch('/pets/:id', requireToken, removeBlanks, (req, res, next) => {
     // if the client attempts to change the owner of the pet, we can disallow that from the getgo
@@ -84,7 +90,7 @@ router.patch('/pets/:id', requireToken, removeBlanks, (req, res, next) => {
 
 
 
-// Remove 
+// REMOVE
 // DELETE /pets/624470c12ed7079ead53d4df
 router.delete('/pets/:id', requireToken, (req, res, next) => {
     // then find the pet by id
@@ -104,12 +110,6 @@ router.delete('/pets/:id', requireToken, (req, res, next) => {
     // if error occurs, pass to the handler
         .catch(next)
 })
-
-
-
-
-
-
 
 // ROUTES ABOVE HERE
 

@@ -19,8 +19,8 @@ mongoose.connect(db, {
 	useNewUrlParser: true,
 })
     .then(() => {
-        // then we remove all the pets
-        Pet.remove({})
+        // then we remove all the pets except the ones that have an owner
+        Pet.deleteMany({ owner: null })
             .then(deletedPets => {
                 console.log('deleted pets', deletedPets)
                 // then we create using the startPets array
@@ -45,13 +45,3 @@ mongoose.connect(db, {
         console.log(error)
         mongoose.connection.close()
     })
-
-
-
-
-
-
-
-
-
-
